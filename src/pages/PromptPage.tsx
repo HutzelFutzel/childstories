@@ -61,7 +61,7 @@ const PromptPage = () => {
                 break;
         }
     }, [ageRange]);
-    
+
     const animals = [
         'Elephant',
         'Penguin',
@@ -83,7 +83,7 @@ const PromptPage = () => {
         'Koala',
         'Cat'
     ]
-   
+
     const rules0to2 = [
         'Use simple and familiar words',
         'Keep sentences very short',
@@ -94,7 +94,7 @@ const PromptPage = () => {
         'friends should have different animals',
         'the main character is a baby in the age range of 0 to 2 years',
         'story length should be 100 words or less',
-        
+
     ]
 
     const rules3to4 = [
@@ -131,10 +131,20 @@ const PromptPage = () => {
     const onCreateStory = async () => {
         setOutput('');
         setIsLoading(true);
-        const response = await newStory('test description');
+        console.log('env', window.env)
+        try {
+
+            const response = await newStory('test description');
+            setTestOutput(response.message || 'No response');
+        } catch (error) {
+            console.error(error)
+        } finally {
+            setIsLoading(false);
+        }
+
         // test output is response.data as string
-        setTestOutput(response.message || 'No response');
-        setIsLoading(false);
+
+
     }
 
     const onSubmit = async () => {
@@ -157,13 +167,13 @@ const PromptPage = () => {
         setOutputMarkdown(responseJson.markdown || 'ERROR');
         setIsLoading(false);
     }
-    
+
     return (
         <div>
             <h1>Prompt Page</h1>
             <p>This is the prompt page</p>
 
-            <select 
+            <select
                 value={ageRange}
                 onChange={(e) => setAgeRange(e.target.value as EAgeRange)}
                 className="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none"
@@ -172,17 +182,17 @@ const PromptPage = () => {
                     <option key={age} value={age}>{age}</option>
                 ))}
             </select>
-            
-            <select 
+
+            <select
                 value={language}
                 onChange={(e) => setLanguage(e.target.value as ELanguage)}
                 className="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none"
             >
-                {Object.values(ELanguage).map((lang) => (   
+                {Object.values(ELanguage).map((lang) => (
                     <option key={lang} value={lang}>{lang}</option>
                 ))}
             </select>
-            
+
             <TextInputArea
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
