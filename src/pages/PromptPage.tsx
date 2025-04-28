@@ -4,6 +4,7 @@ import generatePrompt from '../utils/prompt';
 import { GoogleGenAI, Schema } from '@google/genai';
 import { storiesResponseSchema } from '../utils/responseSchemas';
 import { EAgeRange, ELanguage } from '../utils/enums';
+import useStories from '../hooks/useStories';
 
 // 1. Panda
 // 2. Bunny
@@ -39,7 +40,10 @@ const PromptPage = () => {
     const [outputHtml, setOutputHtml] = useState<string>('');
     const [outputMarkdown, setOutputMarkdown] = useState<string>('');
 
+    const [testOutput, setTestOutput] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
+
+    const { newStory } = useStories();
 
     useEffect(() => {
         switch (ageRange) {
@@ -124,6 +128,15 @@ const PromptPage = () => {
         'story length should be 400 words or less'
     ]
 
+    const onCreateStory = async () => {
+        setOutput('');
+        setIsLoading(true);
+        const response = await newStory('test description');
+        // test output is response.data as string
+        setTestOutput(response.message || 'No response');
+        setIsLoading(false);
+    }
+
     const onSubmit = async () => {
         setIsLoading(true);
         const prompt = generatePrompt(input, ageRange, rules, language);
@@ -175,7 +188,10 @@ const PromptPage = () => {
                 onChange={(e) => setInput(e.target.value)}
             />
 
-            <button onClick={onSubmit} disabled={isLoading}>{isLoading ? 'Generating...' : 'Submit'}</button>
+            {/* <button onClick={onSubmit} disabled={isLoading}>{isLoading ? 'Generating...' : 'Submit'}</button> */}
+
+            <button onClick={() => onCreateStory()} disabled={isLoading}>{isLoading ? 'Generating...' : 'Test'}</button>
+            <div>{testOutput}</div>
 
             {isLoading && <div>Loading...</div>}
             {output && <div>
